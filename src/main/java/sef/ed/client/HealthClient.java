@@ -35,11 +35,9 @@ public class HealthClient {
 //                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                 .build();
 
-        HttpResponse response = httpClient.execute(new HttpGet("https://localhost:8080/health"));
-//        HttpResponse response = httpClient.execute(new HttpGet("https://127.0.0.1:8080/health"));
-        System.out.println("==================================================");
+//        HttpResponse response = httpClient.execute(new HttpGet("https://localhost:8080/health"));
+        HttpResponse response = httpClient.execute(new HttpGet("https://127.0.0.1:8080/health"));
         System.out.println(response.getStatusLine());
-        System.out.println("==================================================");
     }
 
     private static KeyStore readKeyStore(String fileName) throws Exception {
