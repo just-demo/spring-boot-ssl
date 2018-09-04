@@ -7,7 +7,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 
 import javax.net.ssl.SSLContext;
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.security.KeyStore;
 
@@ -26,8 +26,8 @@ public class HealthClient {
                 .loadTrustMaterial(readKeyStore("truststore.p12"), null)
                 // TODO: what is there are multiple keys???
                 .loadKeyMaterial(readKeyStore("keystore.p12"), "demopass".toCharArray())
-//                .loadTrustMaterial(new File(getFilePath("truststore.p12")), "demopass".toCharArray())
-//                .loadKeyMaterial(new File(getFilePath("keystore.p12")), "demopass".toCharArray(), "demopass".toCharArray())
+//                .loadTrustMaterial(getFile("truststore.p12"), "demopass".toCharArray())
+//                .loadKeyMaterial(getFile("keystore.p12"), "demopass".toCharArray(), "demopass".toCharArray())
                 .build();
 
         HttpClient httpClient = HttpClients.custom()
@@ -42,15 +42,15 @@ public class HealthClient {
         System.out.println("==================================================");
     }
 
-    private static KeyStore readKeyStore(String file) throws Exception {
+    private static KeyStore readKeyStore(String fileName) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        try (InputStream inputStream = new FileInputStream(getFilePath(file))) {
+        try (InputStream inputStream = HealthClient.class.getResourceAsStream("/" + fileName)) {
             keyStore.load(inputStream, "demopass".toCharArray());
         }
         return keyStore;
     }
 
-    private static String getFilePath(String file) {
-        return HealthClient.class.getResource("/" + file).getPath();
+    private static File getFile(String fileName) {
+        return new File(HealthClient.class.getResource("/" + fileName).getPath());
     }
 }
