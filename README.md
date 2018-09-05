@@ -12,7 +12,12 @@ keytool -genkeypair -keyalg RSA -alias test -keystore keystore.p12 -validity 365
 -ext san=ip:127.0.0.1
 
 # 4 - Export certificate from key store
-keytool -export -keystore keystore.p12 -storepass demopass -alias test -file cert.cer
+keytool -exportcert -keystore keystore.p12 -storepass demopass -alias test -file cert.cer
+# keytool -exportcert -keystore keystore.p12 -storepass demopass -alias test -rfc -file cert.pem
+# openssl pkcs12 -in keystore.p12 -out keystore.pem
+# openssl pkcs12 -in keystore.p12 -out cert2.pem -clcerts -nokeys -passin pass:demopass
+# openssl pkcs12 -in keystore.p12 -out key.pem -nodes -nocerts -passin pass:demopass
+# openssl pkcs12 -in keystore.p12 -nodes -nocerts -passin pass:demopass | openssl rsa -out key.pem
 
 # 5 - Import certificate into trust store
 keytool -import -trustcacerts -noprompt -alias test -file cert.cer -keystore truststore.p12 -storetype pkcs12 -storepass demopass
