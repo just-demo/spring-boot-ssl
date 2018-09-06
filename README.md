@@ -24,29 +24,33 @@ keytool -import -trustcacerts -noprompt -alias demo -file cert.pem -keystore tru
 
 ############################
 
-# 6 - Verify data (without "-storetype pkcs12" keytool blames that the store is of JKS type, which is weird)
+# Verify data (without "-storetype pkcs12" keytool blames that the store is of JKS type, which is weird)
 # keytool -list -v -keystore keystore.p12 -storepass demopass -storetype pkcs12
 # keytool -list -v -keystore truststore.p12 -storepass demopass -storetype pkcs12
 # keytool -list -v -keystore /Library/Java/JavaVirtualMachines/.../Contents/Home/jre/lib/security/cacerts -storepass changeit
-# keytool -printcert -file cert.pem
+# keytool -printcertreq -file cert-req.csr
 
 ############################
+
+# 6 - Generate client key pair
+keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
+-dname "CN=localhost, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"
 
 # 7 - Create CA certificate
 keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore ca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
 -dname "CN=democa, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"
 
 # 8 - Create certificate signing request
-keytool -certreq -alias demo -keystore keystore.p12 -storepass demopass -file ca-req.csr
+keytool -certreq -alias demo -keystore keystore.p12 -storepass demopass -file cert-req.csr
 
 # 9 - Create and sign request based on CSR
-keytool -gencert -infile ca-req.csr -outfile cert-ca.pem -rfc -keystore ca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass
+keytool -gencert -infile cert-req.csr -outfile cert-ca.pem -rfc -keystore ca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass
 
 # 10 - Export CA certificate from key store
 keytool -exportcert -keystore ca-keystore.p12 -storepass demopass -alias demo -rfc -file ca-cert.pem
 
 # 11 - Import CA certificate into trust store
-keytool -import -trustcacerts -noprompt -alias demo -file cert.pem -keystore ca-truststore.p12 -storetype pkcs12 -storepass demopass
+keytool -import -trustcacerts -noprompt -alias demo -file ca-cert.pem -keystore ca-truststore.p12 -storetype pkcs12 -storepass demopass
 
 # 12 - Extract client key from key store ("nodes" is "no DES" and means no key encryption)
 openssl pkcs12 -in keystore.p12 -nodes -nocerts -passin pass:demopass | openssl rsa -out key.pem
