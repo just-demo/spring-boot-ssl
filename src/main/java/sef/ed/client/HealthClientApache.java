@@ -16,7 +16,7 @@ public class HealthClientApache {
 //        System.setProperty("javax.net.ssl.trustStore", getAbsolutePath("truststore.p12"));
 //        System.setProperty("javax.net.ssl.trustStorePassword", "demopass");
 //        System.setProperty("javax.net.ssl.trustStoreType", "PKCS12");
-        // TODO: debug to see how HttpClient uses trustStore, but not uses keyStore
+        // keyStore system property was working up to 4.1-beta1 and makes not effect starting with 4.1
 //        System.setProperty("javax.net.ssl.keyStore", getAbsolutePath("keystore.p12"));
 //        System.setProperty("javax.net.ssl.keyStorePassword", "demopass");
 //        System.setProperty("javax.net.ssl.keyStoreType", "PKCS12");
@@ -24,7 +24,7 @@ public class HealthClientApache {
         SSLContext sslContext = SSLContexts.custom()
 //                .loadTrustMaterial(null, new TrustSelfSignedStrategy())
                 .loadTrustMaterial(readKeyStore("truststore.p12"), null)
-                // TODO: what is there are multiple keys???
+                // TODO: what if there are multiple keys???
                 .loadKeyMaterial(readKeyStore("keystore.p12"), "demopass".toCharArray())
 //                .loadTrustMaterial(new File(getAbsolutePath("truststore.p12")), "demopass".toCharArray())
 //                .loadKeyMaterial(new File(getAbsolutePath("keystore.p12")), "demopass".toCharArray(), "demopass".toCharArray())
