@@ -24,9 +24,9 @@ keytool -import -trustcacerts -noprompt -alias demo -file cert.pem -keystore tru
 
 ############################
 
-# 6 - Verify data
-# keytool -list -v -keystore keystore.p12 -storepass demopass
-# keytool -list -v -keystore truststore.p12 -storepass demopass
+# 6 - Verify data (without "-storetype pkcs12" keytool blames that the store is of JKS type, which is weird)
+# keytool -list -v -keystore keystore.p12 -storepass demopass -storetype pkcs12
+# keytool -list -v -keystore truststore.p12 -storepass demopass -storetype pkcs12
 # keytool -list -v -keystore /Library/Java/JavaVirtualMachines/.../Contents/Home/jre/lib/security/cacerts -storepass changeit
 # keytool -printcert -file cert.pem
 
