@@ -41,7 +41,8 @@ keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore ca-keysto
 -dname "CN=democa, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown"
 
 # 8 - Create certificate signing request
-keytool -certreq -alias demo -keystore keystore.p12 -storepass demopass -file cert-req.csr
+keytool -certreq -alias demo -keystore keystore.p12 -storepass demopass -file cert-req.csr \
+-ext san=dns:localhost,ip:127.0.0.1
 
 # 9 - Create and sign request based on CSR
 keytool -gencert -infile cert-req.csr -outfile cert-ca.pem -rfc -keystore ca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass
