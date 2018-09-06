@@ -22,9 +22,9 @@ public class HealthClientApache {
 
         SSLContext sslContext = SSLContexts.custom()
 //                .loadTrustMaterial(null, new TrustSelfSignedStrategy())
-                .loadTrustMaterial(readKeyStore("truststore.p12"), null)
-                // TODO: what if there are multiple keys?
-                .loadKeyMaterial(readKeyStore("keystore.p12"), "demopass".toCharArray())
+                // TODO: why does truststore.p12 also work for CA signed certificate???
+                .loadTrustMaterial(readKeyStore("ca-truststore.p12"), null)
+//                .loadKeyMaterial(readKeyStore("keystore.p12"), "demopass".toCharArray())
 //                .loadTrustMaterial(new File(getAbsolutePath("truststore.p12")), "demopass".toCharArray())
 //                .loadKeyMaterial(new File(getAbsolutePath("keystore.p12")), "demopass".toCharArray(), "demopass".toCharArray())
                 .build();
