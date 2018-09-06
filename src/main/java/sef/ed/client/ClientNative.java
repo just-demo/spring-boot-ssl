@@ -5,7 +5,7 @@ import java.net.URL;
 
 import static sef.ed.client.FileUtils.getAbsolutePath;
 
-public class HealthClientNative {
+public class ClientNative {
     public static void main(String[] args) throws Exception {
         System.setProperty("javax.net.ssl.trustStore", getAbsolutePath("truststore.p12"));
         System.setProperty("javax.net.ssl.trustStorePassword", "demopass");
@@ -14,7 +14,7 @@ public class HealthClientNative {
         System.setProperty("javax.net.ssl.keyStorePassword", "demopass");
         System.setProperty("javax.net.ssl.keyStoreType", "pkcs12");
 
-        HttpURLConnection connection = (HttpURLConnection) new URL("https://localhost:8080/health").openConnection();
+        HttpURLConnection connection = (HttpURLConnection) new URL("https://localhost:8080").openConnection();
         System.out.println(connection.getResponseCode());
     }
 }

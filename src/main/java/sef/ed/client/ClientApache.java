@@ -10,7 +10,7 @@ import javax.net.ssl.SSLContext;
 import java.io.InputStream;
 import java.security.KeyStore;
 
-public class HealthClientApache {
+public class ClientApache {
     public static void main(String[] args) throws Exception {
 //        System.setProperty("javax.net.debug", "ssl,handshake");
 //        System.setProperty("javax.net.ssl.trustStore", getAbsolutePath("truststore.p12"));
@@ -25,8 +25,6 @@ public class HealthClientApache {
                 // TODO: why does truststore.p12 also work for CA signed certificate???
                 .loadTrustMaterial(readKeyStore("ca-truststore.p12"), null)
 //                .loadKeyMaterial(readKeyStore("keystore.p12"), "demopass".toCharArray())
-//                .loadTrustMaterial(new File(getAbsolutePath("truststore.p12")), "demopass".toCharArray())
-//                .loadKeyMaterial(new File(getAbsolutePath("keystore.p12")), "demopass".toCharArray(), "demopass".toCharArray())
                 .build();
 
         HttpClient httpClient = HttpClients.custom()
@@ -35,13 +33,13 @@ public class HealthClientApache {
 //                .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                 .build();
 
-        HttpResponse response = httpClient.execute(new HttpGet("https://localhost:8080/health"));
+        HttpResponse response = httpClient.execute(new HttpGet("https://localhost:8080"));
         System.out.println(response.getStatusLine());
     }
 
     private static KeyStore readKeyStore(String fileName) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        try (InputStream inputStream = HealthClientApache.class.getResourceAsStream("/" + fileName)) {
+        try (InputStream inputStream = ClientApache.class.getResourceAsStream("/" + fileName)) {
             keyStore.load(inputStream, "demopass".toCharArray());
         }
         return keyStore;
