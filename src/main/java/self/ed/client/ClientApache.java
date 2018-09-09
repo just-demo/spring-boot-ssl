@@ -1,4 +1,4 @@
-package sef.ed.client;
+package self.ed.client;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

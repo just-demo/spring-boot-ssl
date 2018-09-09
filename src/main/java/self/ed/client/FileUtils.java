@@ -1,4 +1,4 @@
-package sef.ed.client;
+package self.ed.client;
 
 public class FileUtils {
     public static String getAbsolutePath(String fileName) {

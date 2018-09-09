@@ -1,4 +1,4 @@
-package sef.ed.generator;
+package self.ed.generator;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.DERSequence;

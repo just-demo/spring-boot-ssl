@@ -1,4 +1,4 @@
-package sef.ed.controller;
+package self.ed.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
