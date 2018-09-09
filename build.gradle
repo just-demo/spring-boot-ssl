@@ -27,5 +27,6 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.apache.httpcomponents:httpclient:4.5.6')
+	compile('org.bouncycastle:bcpkix-jdk15on:1.60')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

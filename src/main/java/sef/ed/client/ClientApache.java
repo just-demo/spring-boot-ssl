@@ -22,7 +22,6 @@ public class ClientApache {
 
         SSLContext sslContext = SSLContexts.custom()
 //                .loadTrustMaterial(null, new TrustSelfSignedStrategy())
-                // TODO: why does truststore.p12 also work for CA signed certificate???
                 .loadTrustMaterial(readKeyStore("ca-truststore.p12"), null)
 //                .loadKeyMaterial(readKeyStore("keystore.p12"), "demopass".toCharArray())
                 .build();
