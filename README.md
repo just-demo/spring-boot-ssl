@@ -30,7 +30,10 @@ rm key.pem
 keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
 -dname "CN=localhost, OU=Demo UO, O=Demo O, L=Demo L, ST=Demo ST, C=Demo C" \
 -ext san=dns:localhost,ip:127.0.0.1 \
--ext eku=clientAuth,serverAuth
+-ext eku=serverAuth,clientAuth
+# -ext eku=1.3.6.1.5.5.7.3.1,1.3.6.1.5.5.7.3.2
+# https://www.alvestrand.no/objectid/1.3.6.1.5.5.7.3.1.html
+# http://oid-info.com/get/1.3.6.1.5.5.7.3.1
 
 # 2 - Export certificate from key store
 keytool -exportcert -keystore keystore.p12 -storepass demopass -alias demo -rfc -file cert.pem
