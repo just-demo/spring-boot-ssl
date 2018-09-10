@@ -1,5 +1,7 @@
 package self.ed.client;
 
+import self.ed.util.FileUtils;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 

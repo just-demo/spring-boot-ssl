@@ -1,4 +1,4 @@
-package self.ed.client;
+package self.ed.util;
 
 public class FileUtils {
     public static String getAbsolutePath(String fileName) {
