@@ -22,6 +22,10 @@ rm key.pem
 # keytool -printcert -file cert.pem
 # keytool -printcertreq -file cert-req.csr
 
+# Verify that certificate matches private key:
+# openssl x509 -noout -modulus -in cert.pem | openssl md5
+# openssl rsa -noout -modulus -in key.pem | openssl md5
+
 ##################################################
 ######## GENERATE SELF-SIGNED CERTIFICATE ########
 ##################################################
