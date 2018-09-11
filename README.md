@@ -140,7 +140,7 @@ openssl pkcs12 -export -in server-ica-rca-cert.pem -inkey server-key.pem -out se
 
 # Another option could be instead of 3.4 and 3.5:
 # openssl pkcs12 -export -in server-cert-ica.pem -inkey server-key.pem -out server-keystore-ica.p12 -password pass:demopass
-# keytool -importcert -file rca-cert.pem -trustcacerts -keystore server-keystore-ica.p12 -storetype pkcs12 -storepass demopass
+# keytool -importcert -file rca-cert.pem -noprompt -keystore server-keystore-ica.p12 -storetype pkcs12 -storepass demopass
 
 ### To test point server to ica/server-keystore-ica.p12 and client to ica/rca-truststore.p12
 
