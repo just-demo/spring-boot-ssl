@@ -138,6 +138,10 @@ cat server-cert-ica.pem rca-cert.pem > server-ica-rca-cert.pem
 # 3.5 - Create key store with server key, server certificates signed by intermediate CA and intermediate certificate signed by root CA
 openssl pkcs12 -export -in server-ica-rca-cert.pem -inkey server-key.pem -out server-keystore-ica.p12 -password pass:demopass
 
+# Another option could be instead of 3.4 and 3.5:
+# openssl pkcs12 -export -in server-cert-ica.pem -inkey server-key.pem -out server-keystore-ica.p12 -password pass:demopass
+# keytool -importcert -file rca-cert.pem -trustcacerts -keystore server-keystore-ica.p12 -storetype pkcs12 -storepass demopass
+
 ### To test point server to ica/server-keystore-ica.p12 and client to ica/rca-truststore.p12
 
 ##################################################
