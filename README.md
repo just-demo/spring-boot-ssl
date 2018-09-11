@@ -49,35 +49,39 @@ keytool -exportcert -keystore keystore.p12 -storepass demopass -alias demo -rfc 
 keytool -import -trustcacerts -noprompt -alias demo -file cert.pem -keystore truststore.p12 -storetype pkcs12 -storepass demopass
 
 ##################################################
-######### GENERATE CA-SIGNED CERTIFICATE #########
+########### GENERATE SIGNED CERTIFICATE #########
 ##################################################
 
-# 1 - Create CA key pair
+# 1.1 - Create CA key pair
 keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore ca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
 -dname "CN=democa, OU=Demo CA UO, O=Demo CA O, L=Demo CA L, ST=Demo CA ST, C=Demo CA C"
 
-# 2 - Generate user key pair
-keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
--dname "CN=localhost, OU=Demo UO, O=Demo O, L=Demo L, ST=Demo ST, C=Demo C"
-
-# 3 - Create certificate signing request
-keytool -certreq -alias demo -keystore keystore.p12 -storepass demopass -file cert-req.csr \
--ext san=dns:localhost,ip:127.0.0.1
-
-# 4 - Create and sign certificate based on CSR
-keytool -gencert -infile cert-req.csr -outfile cert-ca.pem -rfc -keystore ca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass
-
-# 5 - Extract user key from key store ("nodes" is "no DES" and means no key encryption)
-openssl pkcs12 -in keystore.p12 -nodes -nocerts -passin pass:demopass | openssl rsa -out key.pem
-
-# 6 - Create key store with user key and certificated signed by CA
-openssl pkcs12 -export -in cert-ca.pem -inkey key.pem -out keystore-ca.p12 -password pass:demopass
-
-# 7 - Export CA certificate from key store
+# 1.2 - Export CA certificate from key store
 keytool -exportcert -keystore ca-keystore.p12 -storepass demopass -alias demo -rfc -file ca-cert.pem
 
-# 8 - Import CA certificate into trust store
+# 1.3 - Import CA certificate into trust store
 keytool -import -trustcacerts -noprompt -alias demo -file ca-cert.pem -keystore ca-truststore.p12 -storetype pkcs12 -storepass demopass
+
+##################################################
+
+# 2.1 - Generate server key pair
+keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore server-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
+-dname "CN=localhost, OU=Demo UO, O=Demo O, L=Demo L, ST=Demo ST, C=Demo C"
+
+# 2.2 - Create server CSR
+keytool -certreq -alias demo -keystore server-keystore.p12 -storepass demopass -file server-cert-req.csr \
+-ext san=dns:localhost,ip:127.0.0.1
+
+# 2.3 - Sign server CSR by CA
+keytool -gencert -infile server-cert-req.csr -outfile server-cert-ca.pem -rfc -keystore ca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass
+
+# 2.4 - Extract server key from key store ("nodes" is "no DES" and means no key encryption)
+openssl pkcs12 -in server-keystore.p12 -nodes -nocerts -passin pass:demopass | openssl rsa -out server-key.pem
+
+# 2.5 - Create key store with server key and certificated signed by CA
+openssl pkcs12 -export -in server-cert-ca.pem -inkey server-key.pem -out server-keystore-ca.p12 -password pass:demopass
+
+### To test point server to ca/server-keystore-ca.p12 and client to ca/ca-truststore.p12
 
 ##################################################
 ######## GENERATE INTERMEDIATE CERTIFICATE #######
@@ -134,6 +138,7 @@ cat server-cert-ica.pem rca-cert.pem > server-ica-rca-cert.pem
 # 3.5 - Create key store with server key, server certificates signed by intermediate CA and intermediate certificate signed by root CA
 openssl pkcs12 -export -in server-ica-rca-cert.pem -inkey server-key.pem -out server-keystore-ica.p12 -password pass:demopass
 
-# To test point server to ica/server-keystore-ica.p12 and client to ica/rca-truststore.p12
+### To test point server to ica/server-keystore-ica.p12 and client to ica/rca-truststore.p12
+
 ##################################################
 ##################################################
