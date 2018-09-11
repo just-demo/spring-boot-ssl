@@ -78,3 +78,62 @@ keytool -exportcert -keystore ca-keystore.p12 -storepass demopass -alias demo -r
 
 # 8 - Import CA certificate into trust store
 keytool -import -trustcacerts -noprompt -alias demo -file ca-cert.pem -keystore ca-truststore.p12 -storetype pkcs12 -storepass demopass
+
+##################################################
+######## GENERATE INTERMEDIATE CERTIFICATE #######
+##################################################
+
+# 1.1 - Create root CA key pair
+keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore rca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
+-dname "CN=root-ca, OU=Root CA UO, O=Root CA O, L=Root CA L, ST=Root CA ST, C=Root CA C"
+
+# 1.2 - Export root CA certificate from key store
+keytool -exportcert -keystore rca-keystore.p12 -storepass demopass -alias demo -rfc -file rca-cert.pem
+
+# 1.3 - Import root CA certificate into trust store
+keytool -import -trustcacerts -noprompt -alias demo -file rca-cert.pem -keystore rca-truststore.p12 -storetype pkcs12 -storepass demopass
+
+##################################################
+
+# 2.1 - Create intermediate CA key pair
+keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore ica-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
+-dname "CN=intermediate-ca, OU=Intermediate CA UO, O=Intermediate CA O, L=Intermediate CA L, ST=Intermediate CA ST, C=Intermediate CA C"
+
+# 2.2 - Create intermediate CSR
+keytool -certreq -alias demo -keystore ica-keystore.p12 -storepass demopass -file ica-cert-req.csr
+
+# 2.3 - Sign intermediate CSR by root CA
+keytool -gencert -infile ica-cert-req.csr -outfile ica-cert-rca.pem -rfc -keystore rca-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
+-ext BasicConstraints=ca:true
+
+# 2.4 - Extract intermediate key from key store ("nodes" is "no DES" and means no key encryption)
+openssl pkcs12 -in ica-keystore.p12 -nodes -nocerts -passin pass:demopass | openssl rsa -out ica-key.pem
+
+# 2.5 - Create key store with intermediate key and certificated signed by root CA
+openssl pkcs12 -export -in ica-cert-rca.pem -inkey ica-key.pem -out ica-keystore-rca.p12 -password pass:demopass
+
+##################################################
+
+# 3.1 - Generate server key pair
+keytool -genkeypair -keyalg RSA -validity 3650 -keysize 2048 -keystore server-keystore.p12 -alias demo -storetype pkcs12 -keypass demopass -storepass demopass \
+-dname "CN=localhost, OU=Sever UO, O=Sever O, L=Sever L, ST=Sever ST, C=Sever C"
+
+# 3.2 - Create server CSR
+keytool -certreq -alias demo -keystore server-keystore.p12 -storepass demopass -file server-cert-req.csr \
+-ext san=dns:localhost,ip:127.0.0.1
+
+# 3.3 - Sign server CSR by intermediate CA
+keytool -gencert -infile server-cert-req.csr -outfile server-cert-ica.pem -rfc -keystore ica-keystore-rca.p12 -alias 1 -storetype pkcs12 -keypass demopass -storepass demopass
+
+# 3.4 - Extract user key from key store ("nodes" is "no DES" and means no key encryption)
+openssl pkcs12 -in server-keystore.p12 -nodes -nocerts -passin pass:demopass | openssl rsa -out server-key.pem
+
+# 3.5 - Concatenate server (which already includes intermediate one) and root certificates
+cat server-cert-ica.pem rca-cert.pem > server-ica-rca-cert.pem
+
+# 3.5 - Create key store with server key, server certificates signed by intermediate CA and intermediate certificate signed by root CA
+openssl pkcs12 -export -in server-ica-rca-cert.pem -inkey server-key.pem -out server-keystore-ica.p12 -password pass:demopass
+
+# To test point server to ica/server-keystore-ica.p12 and client to ica/rca-truststore.p12
+##################################################
+##################################################
